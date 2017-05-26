@@ -26,6 +26,44 @@ func TestAdd(t *testing.T) {
 	}
 }
 
+func TestGet(t *testing.T) {
+	r, _ := vaporch.New(&vaporch.Config{})
+
+	r.AddNode("node-a")
+	r.AddNode("node-b")
+	r.AddNode("node-c")
+	r.AddNode("node-d")
+	r.AddNode("node-e")
+
+	if r.Get("someRandomKey") != "node-c" {
+		t.Errorf("Expected node-c, got %s\n", r.Get("someRandomKey"))
+	}
+}
+
+func TestGetN(t *testing.T) {
+	r, _ := vaporch.New(&vaporch.Config{})
+
+	r.AddNode("node-a")
+	r.AddNode("node-b")
+	r.AddNode("node-c")
+	r.AddNode("node-d")
+	r.AddNode("node-e")
+
+	expected := []string{"node-c", "node-d", "node-e"}
+	got := r.GetN("someRandomKey", 3)
+
+	for n := range got {
+		if got[n] != expected[n] {
+			t.Errorf("Expected %s, got %s\n", expected[n], got[n])
+		}
+	}
+
+	got = r.GetN("someRandomKey", 8)
+	if len(got) > len(r.Members()) {
+		t.Error("Unexpected number of nodes returned")
+	}
+}
+
 func TestMembers(t *testing.T) {
 	r, _ := vaporch.New(&vaporch.Config{})
 

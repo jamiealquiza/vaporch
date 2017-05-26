@@ -119,7 +119,32 @@ func (r *Ring) Get(k string) string {
 	return r.nodes[idxFromKey(k, len(r.nodes))].Name
 }
 
-// func (r *Ring) GetN(k string, n int) []string {}
+// GetN takes a key k and replicas n and
+// returns up to [n]string sequential nodes; each
+// node considered a replica. The first node returned
+// is what would be returned in a normal Get lookup,
+// followed by the next n-1 nodes as positioned on
+// the hash ring.
+func (r *Ring) GetN(k string, n int) []string {
+	l := len(r.nodes)
+	idx := idxFromKey(k, l)
+	ns := []string{}
+
+	// If n is > than the number of
+	// nodes, only return up to the
+	// number of nodes.
+	if n > l {
+		n = l
+	}
+
+	// Walk the keyspace and fetch
+	// n sequential nodes.
+	for i := 0; i < n; i++ {
+		ns = append(ns, r.nodes[(idx+i)%l].Name)
+	}
+
+	return ns
+}
 
 // idxFromKey takes a key k and NodeList length
 // l. The index is determined by scaling the FNV-1a
