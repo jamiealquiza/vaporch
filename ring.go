@@ -13,7 +13,7 @@ var (
 	ErrNodeExists = errors.New("Node already exists")
 )
 
-// Ring is a VaporCH
+// Ring is a vaporCH
 // consistent-hashing ring.
 type Ring struct {
 	sync.RWMutex
@@ -31,7 +31,7 @@ type Node struct {
 	Name string
 }
 
-// Config holds VaporCH
+// Config holds vaporCH
 // initialization parameters.
 type Config struct {
 	Nodes []*Node
