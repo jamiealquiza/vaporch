@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	ErrNodeExists = errors.New("Node already exists")
+	ErrNodeExists    = errors.New("Node already exists")
+	ErrNodeNotExists = errors.New("Node does not exist")
 )
 
 // Ring is a vaporCH
@@ -100,6 +101,29 @@ func (r *Ring) AddNode(n string) error {
 // AddNodes adds multiple nodes at once.
 func (r *Ring) AddNodes(ns []*Node) {
 	_ = ns
+}
+
+// RemoveNode removes a node n from the hash ring.
+func (r *Ring) RemoveNode(n string) error {
+	r.Lock()
+	defer r.Unlock()
+
+	if _, exists := r.nodeMap[n]; !exists {
+		return ErrNodeNotExists
+	}
+
+	// Remove node meta.
+	delete(r.nodeMap, n)
+	newNl := NodeList{}
+	for _, nd := range r.nodes {
+		if nd.Name != n {
+			newNl = append(newNl, nd)
+		}
+	}
+
+	r.nodes = newNl
+
+	return nil
 }
 
 // Members returns all nodes
