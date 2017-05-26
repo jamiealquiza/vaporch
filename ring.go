@@ -116,7 +116,10 @@ func (r *Ring) Members() NodeList {
 // Get takes a key k and returns the node name
 // that owns the key hash ID on the ring keyspace.
 func (r *Ring) Get(k string) string {
-	return r.nodes[idxFromKey(k, len(r.nodes))].Name
+	r.RLock()
+	n := r.nodes[idxFromKey(k, len(r.nodes))].Name
+	r.RUnlock()
+	return n
 }
 
 // GetN takes a key k and replicas n and
@@ -126,6 +129,7 @@ func (r *Ring) Get(k string) string {
 // followed by the next n-1 nodes as positioned on
 // the hash ring.
 func (r *Ring) GetN(k string, n int) []string {
+	r.RLock()
 	l := len(r.nodes)
 	idx := idxFromKey(k, l)
 	ns := []string{}
@@ -142,6 +146,8 @@ func (r *Ring) GetN(k string, n int) []string {
 	for i := 0; i < n; i++ {
 		ns = append(ns, r.nodes[(idx+i)%l].Name)
 	}
+
+	r.RUnlock()
 
 	return ns
 }
