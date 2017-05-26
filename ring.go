@@ -17,11 +17,11 @@ var (
 // consistent-hashing ring.
 type Ring struct {
 	sync.RWMutex
-	nodes   nodeList
+	nodes   NodeList
 	nodeMap map[string]*Node
 }
 
-type nodeList []*Node
+type NodeList []*Node
 
 // Node represents a node
 // in the hash ring.
@@ -39,7 +39,7 @@ type Config struct {
 // a *Ring.
 func New(c *Config) (*Ring, error) {
 	r := &Ring{
-		nodes:   nodeList{},
+		nodes:   NodeList{},
 		nodeMap: make(map[string]*Node),
 	}
 
@@ -56,14 +56,14 @@ func New(c *Config) (*Ring, error) {
 }
 
 // Satisfy the sort interface
-// for nodeList.
-func (n nodeList) Len() int           { return len(n) }
-func (n nodeList) Less(i, j int) bool { return n[i].Name < n[j].Name }
-func (n nodeList) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
+// for NodeList.
+func (n NodeList) Len() int           { return len(n) }
+func (n NodeList) Less(i, j int) bool { return n[i].Name < n[j].Name }
+func (n NodeList) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
 
 // Names returns a []string of node names
-// from a nodeList.
-func (n nodeList) Names() []string {
+// from a NodeList.
+func (n NodeList) Names() []string {
 	s := []string{}
 	for _, n := range n {
 		s = append(s, n.Name)
@@ -99,10 +99,10 @@ func (r *Ring) AddNodes(ns []*Node) {
 }
 
 // Members returns all nodes
-// in the *Ring as a nodeList.
-func (r *Ring) Members() nodeList {
+// in the *Ring as a NodeList.
+func (r *Ring) Members() NodeList {
 	r.RLock()
-	m := make(nodeList, len(r.nodes))
+	m := make(NodeList, len(r.nodes))
 	copy(m, r.nodes)
 	r.RUnlock()
 
@@ -115,10 +115,10 @@ func (r *Ring) Get(k string) string {
 	return r.nodes[idxFromKey(k, len(r.nodes))].Name
 }
 
-// idxFromKey takes a key k and nodeList length
+// idxFromKey takes a key k and NodeList length
 // l. The index is determined by scaling the FNV-1a
 // 64 bit key hash scaled to the range
-// 0.0..len(r.nodeList), then rounded to the nearest int.
+// 0.0..len(r.NodeList), then rounded to the nearest int.
 func idxFromKey(k string, l int) int {
 	n := float64(l-1)
 	sf := scale(float64(hash(k)), 0, math.MaxUint64, 0, n)
