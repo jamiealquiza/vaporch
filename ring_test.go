@@ -2,6 +2,7 @@ package vaporch_test
 
 import (
 	"fmt"
+	"sort"
 	"testing"
 
 	"github.com/jamiealquiza/vaporch"
@@ -64,7 +65,21 @@ func TestDistribution(t *testing.T) {
 		nodes[r.Get(k)] += 1
 	}
 
-	fmt.Println(nodes)
+	fmt.Printf("Node:key-count - %v\n", nodes)
+
+	var total float64
+	var counts []float64
+	for k := range nodes {
+		v := float64(nodes[k])
+		total += v
+		counts = append(counts, v)
+	}
+
+	sort.Float64s(counts)
+	rng := counts[len(counts)-1] - counts[0]
+	imb := fmt.Sprintf("%.2f", rng/total*100)
+
+	fmt.Printf("Greatest imbalance: %s%%\n\n", imb)
 
 }
 
