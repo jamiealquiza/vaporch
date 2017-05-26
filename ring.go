@@ -95,6 +95,8 @@ func (r *Ring) AddNode(n string) error {
 	return nil
 }
 
+// func (r *Ring) RemoveNode(n string) error {}
+
 // AddNodes adds multiple nodes at once.
 func (r *Ring) AddNodes(ns []*Node) {
 	_ = ns
@@ -116,6 +118,8 @@ func (r *Ring) Members() NodeList {
 func (r *Ring) Get(k string) string {
 	return r.nodes[idxFromKey(k, len(r.nodes))].Name
 }
+
+// func (r *Ring) GetN(k string, n int) []string {}
 
 // idxFromKey takes a key k and NodeList length
 // l. The index is determined by scaling the FNV-1a
