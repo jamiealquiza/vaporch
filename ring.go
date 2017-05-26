@@ -117,11 +117,13 @@ func (r *Ring) Get(k string) string {
 
 // idxFromKey takes a key k and nodeList length
 // l. The index is determined by scaling the FNV-1a
-// 64 bit key hash scaled normalized to the range
-// 0.0..len(r.nodeList)
+// 64 bit key hash scaled to the range
+// 0.0..len(r.nodeList), then rounded to the nearest int.
 func idxFromKey(k string, l int) int {
-	n := float64(l)
-	return int(scale(float64(hash(k)), 0, math.MaxUint64, 0, n))
+	n := float64(l-1)
+	sf := scale(float64(hash(k)), 0, math.MaxUint64, 0, n)
+
+	return int(math.Floor(sf+0.5))
 }
 
 // hash takes a key k and returns
