@@ -126,10 +126,10 @@ func (r *Ring) Get(k string) string {
 // 64 bit key hash to the range 0.0..len(r.NodeList)
 // then rounding to the nearest int.
 func idxFromKey(k string, l int) int {
-	n := float64(l-1)
+	n := float64(l - 1)
 	sf := scale(float64(hash(k)), 0, math.MaxUint64, 0, n)
 
-	return int(math.Floor(sf+0.5))
+	return int(math.Floor(sf + 0.5))
 }
 
 // hash takes a key k and returns
