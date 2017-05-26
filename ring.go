@@ -21,6 +21,8 @@ type Ring struct {
 	nodeMap map[string]*Node
 }
 
+// NodeList holdes a list
+// of *Nodes.
 type NodeList []*Node
 
 // Node represents a node
