@@ -18,6 +18,7 @@ func TestAdd(t *testing.T) {
 	r.AddNode("node-d")
 	r.AddNode("node-e")
 
+	// Ensure dupes are prevented.
 	err := r.AddNode("node-a")
 	if err != vaporch.ErrNodeExists {
 		t.Error("Expected vaporch.ErrNodeExists")
@@ -33,11 +34,8 @@ func TestMembers(t *testing.T) {
 	r.AddNode("node-c")
 	r.AddNode("node-b")
 
-	err := r.AddNode("node-a")
-	if err != vaporch.ErrNodeExists {
-		t.Error("Expected vaporch.ErrNodeExists")
-	}
-
+	// The ring should sort the node names
+	// lexicographically.
 	members := r.Members().Names()
 	expected := []string{"node-a", "node-b", "node-c", "node-d", "node-e"}
 	for n := range members {
