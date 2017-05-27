@@ -88,10 +88,17 @@ func (r *Ring) AddNode(n string) error {
 
 	// Add the node.
 	node := &Node{Name: n}
-	r.nodes = append(r.nodes, node)
-	// Sort, update meta.
-	sort.Sort(r.nodes)
 	r.nodeMap[n] = node
+
+	nodes := NodeList{}
+	for k := range r.nodeMap {
+		nodes = append(nodes, r.nodeMap[k])
+	}
+
+	sort.Sort(r.nodes)
+	nodes = append(nodes, nodes...)
+
+	r.nodes = nodes
 
 	return nil
 }
@@ -154,7 +161,7 @@ func (r *Ring) Get(k string) string {
 // the hash ring.
 func (r *Ring) GetN(k string, n int) []string {
 	r.RLock()
-	l := len(r.nodes)
+	l := len(r.nodeMap)
 	idx := idxFromKey(k, l)
 	ns := []string{}
 
