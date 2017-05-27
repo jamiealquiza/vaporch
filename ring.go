@@ -1,4 +1,4 @@
-// Package vaporch is a fast, serch-free
+// Package vaporch is a fast, search-free
 // consistent-hashing implementation.
 package vaporch
 
