@@ -136,9 +136,11 @@ func TestDistribution(t *testing.T) {
 
 	sort.Float64s(counts)
 	rng := counts[len(counts)-1] - counts[0]
-	imb := fmt.Sprintf("%.2f", rng/total*100)
+	imbp := rng / total * 100
+	imbr := counts[len(counts)-1] / counts[0]
 
-	fmt.Printf("Greatest imbalance: %s%%\n\n", imb)
+	fmt.Printf("Greatest imbalance - portion of keys: %.2f%% / ratio: %.2fx\n\n",
+		imbp, imbr)
 
 }
 
