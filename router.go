@@ -35,7 +35,7 @@ type Node struct {
 // Config holds vaporHR
 // initialization parameters.
 type Config struct {
-	Nodes []*Node
+	Nodes []string
 }
 
 // New takes a *Config and initializes
@@ -96,11 +96,11 @@ func (r *Router) AddNode(n string) error {
 	return nil
 }
 
-// func (r *Router) RemoveNode(n string) error {}
-
 // AddNodes adds multiple nodes at once.
-func (r *Router) AddNodes(ns []*Node) {
-	_ = ns
+func (r *Router) AddNodes(ns []string) {
+	for _, n := range ns {
+		r.AddNode(n)
+	}
 }
 
 // RemoveNode removes a node n from the hash router.
