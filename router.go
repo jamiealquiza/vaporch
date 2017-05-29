@@ -44,7 +44,7 @@ type Config struct {
 // a *Router.
 func New(c *Config) (*Router, error) {
 	if c.VNodes == 0 {
-		c.VNodes = 2
+		c.VNodes = 3
 	}
 
 	r := &Router{
