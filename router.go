@@ -20,6 +20,7 @@ type Router struct {
 	sync.RWMutex
 	nodes   NodeList
 	nodeMap map[string]*Node
+	vnodes  int
 }
 
 // NodeList holdes a list
@@ -35,15 +36,21 @@ type Node struct {
 // Config holds vaporHR
 // initialization parameters.
 type Config struct {
-	Nodes []string
+	Nodes  []string
+	VNodes int
 }
 
 // New takes a *Config and initializes
 // a *Router.
 func New(c *Config) (*Router, error) {
+	if c.VNodes == 0 {
+		c.VNodes = 2
+	}
+
 	r := &Router{
 		nodes:   NodeList{},
 		nodeMap: make(map[string]*Node),
+		vnodes:  c.VNodes,
 	}
 
 	// Check if the router is
@@ -88,10 +95,22 @@ func (r *Router) AddNode(n string) error {
 
 	// Add the node.
 	node := &Node{Name: n}
-	r.nodes = append(r.nodes, node)
-	// Sort, update meta.
-	sort.Sort(r.nodes)
 	r.nodeMap[n] = node
+
+	// Build a node list.
+	nodes := NodeList{}
+	for k := range r.nodeMap {
+		nodes = append(nodes, r.nodeMap[k])
+	}
+
+	sort.Sort(r.nodes)
+
+	// Populate by the configured VNodes factor.
+	for i := 1; i < r.vnodes; i++ {
+		nodes = append(nodes, nodes...)
+	}
+
+	r.nodes = nodes
 
 	return nil
 }
