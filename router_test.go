@@ -26,6 +26,19 @@ func TestAddNode(t *testing.T) {
 	}
 }
 
+func TestAddNodes(t *testing.T) {
+	r, _ := vaporhr.New(&vaporhr.Config{Nodes: []string{"node-a", "node-b", "node-c"}})
+
+	expected := []string{"node-a", "node-b", "node-c"}
+	got := r.Members().Names()
+
+	for n := range got {
+		if got[n] != expected[n] {
+			t.Errorf("Expected member %s, got %s", expected[n], got[n])
+		}
+	}
+}
+
 func TestRemoveNode(t *testing.T) {
 	r, _ := vaporhr.New(&vaporhr.Config{})
 
