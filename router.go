@@ -82,6 +82,7 @@ func (n NodeList) Names() []string {
 	return s
 }
 
+// Size returns the number of real nodes.
 func (r *Router) Size() int {
 	switch len(r.nodes) {
 	case 0:
