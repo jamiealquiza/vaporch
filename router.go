@@ -82,6 +82,15 @@ func (n NodeList) Names() []string {
 	return s
 }
 
+func (r *Router) Size() int {
+	switch len(r.nodes) {
+	case 0:
+		return 0
+	default:
+		return len(r.nodes) / r.vnodes
+	}
+}
+
 // AddNode adds a node by name
 // to the hash router.
 func (r *Router) AddNode(n string) error {
@@ -103,14 +112,13 @@ func (r *Router) AddNode(n string) error {
 		nodes = append(nodes, r.nodeMap[k])
 	}
 
-	sort.Sort(r.nodes)
+	sort.Sort(nodes)
 
 	// Populate by the configured VNodes factor.
-	for i := 1; i < r.vnodes; i++ {
-		nodes = append(nodes, nodes...)
+	r.nodes = NodeList{}
+	for i := 0; i < r.vnodes; i++ {
+		r.nodes = append(r.nodes, nodes...)
 	}
-
-	r.nodes = nodes
 
 	return nil
 }
@@ -149,7 +157,7 @@ func (r *Router) RemoveNode(n string) error {
 // in the *Router as a NodeList.
 func (r *Router) Members() NodeList {
 	r.RLock()
-	m := make(NodeList, len(r.nodes))
+	m := make(NodeList, r.Size())
 	copy(m, r.nodes)
 	r.RUnlock()
 
@@ -173,7 +181,7 @@ func (r *Router) Get(k string) string {
 // the hash router.
 func (r *Router) GetN(k string, n int) []string {
 	r.RLock()
-	l := len(r.nodes)
+	l := r.Size()
 	idx := idxFromKey(k, l)
 	ns := []string{}
 
