@@ -1,6 +1,6 @@
-// Package vaporhr is a fast
-// hash router.
-package vaporhr
+// Package vaporch is a fast
+// consistent hashing implementation.
+package vaporch
 
 import (
 	"errors"
@@ -14,9 +14,9 @@ var (
 	ErrNodeNotExists = errors.New("Node does not exist")
 )
 
-// Router is a vaporHR
-// hash router.
-type Router struct {
+// Ring is a vaporCH
+// consistent hash ring.
+type Ring struct {
 	sync.RWMutex
 	nodes   NodeList
 	nodeMap map[string]*Node
@@ -28,12 +28,12 @@ type Router struct {
 type NodeList []*Node
 
 // Node represents a node
-// in the hash router.
+// in the hash ring.
 type Node struct {
 	Name string
 }
 
-// Config holds vaporHR
+// Config holds vaporCH
 // initialization parameters.
 type Config struct {
 	Nodes  []string
@@ -41,19 +41,19 @@ type Config struct {
 }
 
 // New takes a *Config and initializes
-// a *Router.
-func New(c *Config) (*Router, error) {
+// a *Ring.
+func New(c *Config) (*Ring, error) {
 	if c.VNodes == 0 {
 		c.VNodes = 3
 	}
 
-	r := &Router{
+	r := &Ring{
 		nodes:   NodeList{},
 		nodeMap: make(map[string]*Node),
 		vnodes:  c.VNodes,
 	}
 
-	// Check if the router is
+	// Check if the ring is
 	// being supplied a node name
 	// list at initialization.
 	if c.Nodes == nil {
@@ -83,7 +83,7 @@ func (n NodeList) Names() []string {
 }
 
 // Size returns the number of real nodes.
-func (r *Router) Size() int {
+func (r *Ring) Size() int {
 	switch len(r.nodes) {
 	case 0:
 		return 0
@@ -93,8 +93,8 @@ func (r *Router) Size() int {
 }
 
 // AddNode adds a node by name
-// to the hash router.
-func (r *Router) AddNode(n string) error {
+// to the hash ring.
+func (r *Ring) AddNode(n string) error {
 	r.Lock()
 	defer r.Unlock()
 
@@ -125,14 +125,14 @@ func (r *Router) AddNode(n string) error {
 }
 
 // AddNodes adds multiple nodes at once.
-func (r *Router) AddNodes(ns []string) {
+func (r *Ring) AddNodes(ns []string) {
 	for _, n := range ns {
 		r.AddNode(n)
 	}
 }
 
-// RemoveNode removes a node n from the hash router.
-func (r *Router) RemoveNode(n string) error {
+// RemoveNode removes a node n from the hash ring.
+func (r *Ring) RemoveNode(n string) error {
 	r.Lock()
 	defer r.Unlock()
 
@@ -155,8 +155,8 @@ func (r *Router) RemoveNode(n string) error {
 }
 
 // Members returns all nodes
-// in the *Router as a NodeList.
-func (r *Router) Members() NodeList {
+// in the *Ring as a NodeList.
+func (r *Ring) Members() NodeList {
 	r.RLock()
 	m := make(NodeList, r.Size())
 	copy(m, r.nodes)
@@ -166,8 +166,8 @@ func (r *Router) Members() NodeList {
 }
 
 // Get takes a key k and returns the node name
-// that owns the key hash ID on the router keyspace.
-func (r *Router) Get(k string) string {
+// that owns the key hash ID on the ring keyspace.
+func (r *Ring) Get(k string) string {
 	r.RLock()
 	n := r.nodes[idxFromKey(k, len(r.nodes))].Name
 	r.RUnlock()
@@ -179,8 +179,8 @@ func (r *Router) Get(k string) string {
 // node considered a replica. The first node returned
 // is what would be returned in a normal Get lookup,
 // followed by the next n-1 nodes as positioned on
-// the hash router.
-func (r *Router) GetN(k string, n int) []string {
+// the hash ring.
+func (r *Ring) GetN(k string, n int) []string {
 	r.RLock()
 	l := r.Size()
 	idx := idxFromKey(k, l)
@@ -227,7 +227,7 @@ func hash(k string) uint64 {
 	return h
 }
 
-// Scale normalizes the input x with the input-min a0,
+// Scale scales the input x with the input-min a0,
 // input-max a1, output-min b0, and output-max b1.
 func scale(x float64, a0, a1, b0, b1 float64) float64 {
 	return (x-a0)/(a1-a0)*(b1-b0) + b0

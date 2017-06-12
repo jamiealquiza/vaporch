@@ -1,13 +1,13 @@
-package vaporhr_test
+package vaporch_test
 
 import (
 	"testing"
 
-	"github.com/jamiealquiza/vaporhr"
+	"github.com/jamiealquiza/vaporch"
 )
 
 func TestAddNode(t *testing.T) {
-	r, _ := vaporhr.New(&vaporhr.Config{})
+	r, _ := vaporch.New(&vaporch.Config{})
 
 	r.AddNode("node-a")
 	r.AddNode("node-b")
@@ -17,13 +17,13 @@ func TestAddNode(t *testing.T) {
 
 	// Ensure dupes are prevented.
 	err := r.AddNode("node-a")
-	if err != vaporhr.ErrNodeExists {
-		t.Error("Expected vaporhr.ErrNodeExists")
+	if err != vaporch.ErrNodeExists {
+		t.Error("Expected vaporch.ErrNodeExists")
 	}
 }
 
 func TestAddNodes(t *testing.T) {
-	r, _ := vaporhr.New(&vaporhr.Config{Nodes: []string{"node-a", "node-b", "node-c"}})
+	r, _ := vaporch.New(&vaporch.Config{Nodes: []string{"node-a", "node-b", "node-c"}})
 
 	expected := []string{"node-a", "node-b", "node-c"}
 	got := r.Members().Names()
@@ -36,7 +36,7 @@ func TestAddNodes(t *testing.T) {
 }
 
 func TestRemoveNode(t *testing.T) {
-	r, _ := vaporhr.New(&vaporhr.Config{})
+	r, _ := vaporch.New(&vaporch.Config{})
 
 	r.AddNode("node-a")
 	r.AddNode("node-b")
@@ -57,7 +57,7 @@ func TestRemoveNode(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	r, _ := vaporhr.New(&vaporhr.Config{})
+	r, _ := vaporch.New(&vaporch.Config{})
 
 	r.AddNode("node-a")
 	r.AddNode("node-b")
@@ -71,7 +71,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetN(t *testing.T) {
-	r, _ := vaporhr.New(&vaporhr.Config{})
+	r, _ := vaporch.New(&vaporch.Config{})
 
 	r.AddNode("node-a")
 	r.AddNode("node-b")
@@ -95,7 +95,7 @@ func TestGetN(t *testing.T) {
 }
 
 func TestMembers(t *testing.T) {
-	r, _ := vaporhr.New(&vaporhr.Config{})
+	r, _ := vaporch.New(&vaporch.Config{})
 
 	r.AddNode("node-a")
 	r.AddNode("node-e")
@@ -103,7 +103,7 @@ func TestMembers(t *testing.T) {
 	r.AddNode("node-c")
 	r.AddNode("node-b")
 
-	// The router should sort the node names
+	// The ring should sort the node names
 	// lexicographically.
 	members := r.Members().Names()
 	expected := []string{"node-a", "node-b", "node-c", "node-d", "node-e"}

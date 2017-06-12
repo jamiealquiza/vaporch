@@ -1,8 +1,8 @@
-[![GoDoc](https://godoc.org/github.com/jamiealquiza/vaporhr?status.svg)](https://godoc.org/github.com/jamiealquiza/vaporhr)
+[![GoDoc](https://godoc.org/github.com/jamiealquiza/vaporhr?status.svg)](https://godoc.org/github.com/jamiealquiza/vaporch)
 
-# vaporHR
+# vaporCH
 
-Is a fast, general purpose, consistent-hashing-esque routing implementation for Go.
+Is a fast, general purpose, consistent hashing implementation for Go.
 
 ```
 BenchmarkGet-8          30000000                39.9 ns/op             0 B/op          0 allocs/op
@@ -15,11 +15,11 @@ package main
 import (
         "fmt"
 
-        "github.com/jamiealquiza/vaporhr"
+        "github.com/jamiealquiza/vaporch"
 )
 
 func main() {
-        r, _ := vaporhr.New(&vaporhr.Config{
+        r, _ := vaporch.New(&vaporhr.Config{
                 Nodes: []string{"node-a", "node-b", "node-c", "node-d", "node-e"},
         })
 

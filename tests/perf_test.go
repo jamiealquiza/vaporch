@@ -1,4 +1,4 @@
-package vaporhr_test
+package vaporch_test
 
 import (
 	"bufio"
@@ -7,7 +7,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/jamiealquiza/vaporhr"
+	"github.com/jamiealquiza/vaporch"
 )
 
 var (
@@ -17,7 +17,7 @@ var (
 // Words via https://raw.githubusercontent.com/dwyl/english-words/master/words.txt.
 
 func TestDistribution(t *testing.T) {
-	r, _ := vaporhr.New(&vaporhr.Config{})
+	r, _ := vaporch.New(&vaporch.Config{})
 
 	nodes := map[string]uint64{
 		"node-a": 0,
@@ -80,7 +80,7 @@ func BenchmarkGet(b *testing.B) {
 	}
 
 	scanner := bufio.NewScanner(file)
-	r, _ := vaporhr.New(&vaporhr.Config{
+	r, _ := vaporch.New(&vaporch.Config{
 		Nodes: []string{"node-a", "node-b", "node-c", "node-d", "node-e"},
 	})
 
