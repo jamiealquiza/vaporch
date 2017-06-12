@@ -18,7 +18,7 @@ var (
 
 func TestDistribution(t *testing.T) {
 	// Test at various vnode factors.
-	for i := 1; i <= 3; i++ {
+	for i := 1; i <= 5; i++ {
 		nodes := map[string]uint64{
 			"node-a": 0,
 			"node-b": 0,
