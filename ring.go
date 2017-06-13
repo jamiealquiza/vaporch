@@ -206,7 +206,7 @@ func (r *Ring) GetN(k string, n int) []string {
 
 // idxFromKey takes a key k and NodeList length
 // l. The index is determined by scaling the FNV-1a
-// 64 bit key hash to the range 0.0..len(r.NodeList)
+// 32 bit key hash to the range 0.0..len(r.NodeList)
 // then rounding to the nearest int.
 func idxFromKey(k string, l int) int {
 	n := float64(l - 1)
