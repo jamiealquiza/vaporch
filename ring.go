@@ -210,18 +210,18 @@ func (r *Ring) GetN(k string, n int) []string {
 // then rounding to the nearest int.
 func idxFromKey(k string, l int) int {
 	n := float64(l - 1)
-	sf := scale(float64(hash(k)), 0, math.MaxUint64, 0, n)
+	sf := scale(float64(hash(k)), 0, math.MaxUint32, 0, n)
 
 	return int(math.Floor(sf + 0.5))
 }
 
 // hash takes a key k and returns
-// the FNV-1a 64 bit hash.
-func hash(k string) uint64 {
-	var h uint64 = 14695981039346656037
+// the FNV-1a 32 bit hash.
+func hash(k string) uint32 {
+	var h uint32 = 2166136261
 	for _, c := range []byte(k) {
-		h ^= uint64(c)
-		h *= 1099511628211
+		h ^= uint32(c)
+		h *= 16777619
 	}
 
 	return h
