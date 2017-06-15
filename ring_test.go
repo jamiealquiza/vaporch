@@ -79,7 +79,7 @@ func TestGetN(t *testing.T) {
 	r.AddNode("node-d")
 	r.AddNode("node-e")
 
-	expected := []string{"node-c", "node-d", "node-e"}
+	expected := []string{"node-b", "node-c", "node-d"}
 	got := r.GetN("someRandomKey", 3)
 
 	for n := range got {
