@@ -74,7 +74,6 @@ func BenchmarkGet(b *testing.B) {
 	b.StopTimer()
 
 	keyCount := 200000
-	mod := keyCount - 1
 
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -104,6 +103,6 @@ func BenchmarkGet(b *testing.B) {
 	b.StartTimer()
 
 	for i := 0; i < b.N; i++ {
-		r.Get(keys[i%mod])
+		r.Get(keys[i%keyCount])
 	}
 }
