@@ -65,8 +65,8 @@ func TestGet(t *testing.T) {
 	r.AddNode("node-d")
 	r.AddNode("node-e")
 
-	if r.Get("someRandomKey") != "node-d" {
-		t.Errorf("Expected node-d, got %s\n", r.Get("someRandomKey"))
+	if r.Get("someRandomKey") != "node-b" {
+		t.Errorf("Expected node-b, got %s\n", r.Get("someRandomKey"))
 	}
 }
 

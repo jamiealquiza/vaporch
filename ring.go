@@ -20,7 +20,6 @@ type Ring struct {
 	sync.RWMutex
 	nodes   NodeList
 	nodeMap map[string]*Node
-	vnodes  int
 }
 
 // NodeList holdes a list
@@ -36,21 +35,15 @@ type Node struct {
 // Config holds vaporCH
 // initialization parameters.
 type Config struct {
-	Nodes  []string
-	VNodes int
+	Nodes []string
 }
 
 // New takes a *Config and initializes
 // a *Ring.
 func New(c *Config) (*Ring, error) {
-	if c.VNodes == 0 {
-		c.VNodes = 1
-	}
-
 	r := &Ring{
 		nodes:   NodeList{},
 		nodeMap: make(map[string]*Node),
-		vnodes:  c.VNodes,
 	}
 
 	// Check if the ring is
@@ -82,21 +75,15 @@ func (n NodeList) Names() []string {
 	return s
 }
 
-// Size returns the number of real nodes.
+// Size returns the number of nodes.
 func (r *Ring) Size() int {
-	switch len(r.nodes) {
-	case 0:
-		return 0
-	default:
-		return len(r.nodes) / r.vnodes
-	}
+	return len(r.nodes)
 }
 
 // AddNode adds a node by name
 // to the hash ring.
 func (r *Ring) AddNode(n string) error {
 	r.Lock()
-	defer r.Unlock()
 
 	// Check if the node already exists.
 	if _, exists := r.nodeMap[n]; exists {
@@ -106,20 +93,10 @@ func (r *Ring) AddNode(n string) error {
 	// Add the node.
 	node := &Node{Name: n}
 	r.nodeMap[n] = node
+	r.nodes = append(r.nodes, node)
+	sort.Sort(r.nodes)
 
-	// Build a node list.
-	nodes := NodeList{}
-	for k := range r.nodeMap {
-		nodes = append(nodes, r.nodeMap[k])
-	}
-
-	sort.Sort(nodes)
-
-	// Populate by the configured VNodes factor.
-	r.nodes = NodeList{}
-	for i := 0; i < r.vnodes; i++ {
-		r.nodes = append(r.nodes, nodes...)
-	}
+	r.Unlock()
 
 	return nil
 }
@@ -166,7 +143,7 @@ func (r *Ring) Members() NodeList {
 }
 
 // Get takes a key k and returns the node name
-// that owns the key hash ID on the ring keyspace.
+// that owns the key space which the key ID exists.
 func (r *Ring) Get(k string) string {
 	r.RLock()
 	n := r.nodes[idxFromKey(k, len(r.nodes))].Name
@@ -175,11 +152,11 @@ func (r *Ring) Get(k string) string {
 }
 
 // GetN takes a key k and replicas n and
-// returns up to [n]string sequential nodes; each
-// node considered a replica. The first node returned
+// returns up to n nodes; each node is
+// considered a replica. The first node ("node1")
 // is what would be returned in a normal Get lookup,
-// followed by the next n-1 nodes as positioned on
-// the hash ring.
+// set replica set returned from GetN being node1...n
+// in sequence from the ring.
 func (r *Ring) GetN(k string, n int) []string {
 	r.RLock()
 	l := r.Size()
@@ -193,8 +170,8 @@ func (r *Ring) GetN(k string, n int) []string {
 		n = l
 	}
 
-	// Walk the keyspace and fetch
-	// n sequential nodes.
+	// Walk the ring and
+	// fetch n nodes.
 	for i := 0; i < n; i++ {
 		ns = append(ns, r.nodes[(idx+i)%l].Name)
 	}
@@ -205,8 +182,8 @@ func (r *Ring) GetN(k string, n int) []string {
 }
 
 // idxFromKey takes a key k and NodeList length
-// l. The index is determined by scaling the FNV-1a
-// 32 bit key hash to the range 0.0..len(r.NodeList)
+// l. The index is determined by scaling the FNV-1a 32
+// key hash to the (logical) range 0.0..len(r.NodeList),
 // then rounding to the nearest int.
 func idxFromKey(k string, l int) int {
 	n := float64(l - 1)
