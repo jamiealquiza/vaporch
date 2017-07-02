@@ -210,7 +210,7 @@ func (r *Ring) GetN(k string, n int) []string {
 // then rounding to the nearest int.
 func idxFromKey(k string, l int) int {
 	n := float64(l - 1)
-	sf := scale(float64(hash(k)), 0, math.MaxUint32, 0, n)
+	sf := scale(float64(hash(k)), 0, math.MaxUint32, -0.5, n+0.5)
 
 	return int(math.Floor(sf + 0.5))
 }
