@@ -14,6 +14,11 @@ var (
 	ErrNodeNotExists = errors.New("Node does not exist")
 )
 
+const (
+	scaleMin float64 = -0.5
+	scaleMax float64 = 0.5
+)
+
 // Ring is a vaporCH
 // consistent hash ring.
 type Ring struct {
@@ -22,7 +27,7 @@ type Ring struct {
 	nodeMap map[string]*Node
 }
 
-// NodeList holdes a list
+// NodeList holds a list
 // of *Nodes.
 type NodeList []*Node
 
@@ -187,7 +192,7 @@ func (r *Ring) GetN(k string, n int) []string {
 // then rounding to the nearest int.
 func idxFromKey(k string, l int) int {
 	n := float64(l - 1)
-	sf := scale(float64(hash(k)), 0, math.MaxUint32, -0.5, n+0.5)
+	sf := scale(float64(hash(k)), 0, math.MaxUint32, scaleMin, n+scaleMax)
 
 	return int(math.Floor(sf + 0.5))
 }
@@ -195,10 +200,10 @@ func idxFromKey(k string, l int) int {
 // hash takes a key k and returns
 // the FNV-1a 32 bit hash.
 func hash(k string) uint32 {
-	var h uint32 = 2166136261
+	var h uint32 = 0x811C9DC5
 	for _, c := range []byte(k) {
 		h ^= uint32(c)
-		h *= 16777619
+		h *= 0x1000193
 	}
 
 	return h
