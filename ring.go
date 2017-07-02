@@ -44,7 +44,7 @@ type Config struct {
 // a *Ring.
 func New(c *Config) (*Ring, error) {
 	if c.VNodes == 0 {
-		c.VNodes = 3
+		c.VNodes = 1
 	}
 
 	r := &Ring{
